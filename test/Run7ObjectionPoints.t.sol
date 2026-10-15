@@ -141,7 +141,7 @@ contract Run7ObjectionPointsTest is SepoliaFixture {
         vm.prank(alice);
         letterbox.letter("A little for rent; my remaining PLEA stays with the Cabal.");
         uint256 id = gate.lastPleaOf(alice);
-        assertEq(gate.getPlea(id).amount, balance * 15 / 100);
+        assertEq(gate.getPlea(id).amount, balance * 20 / 100);
         assertTrue(answer(id, 45));
         uint256 oid = objectTo(bob, id);
         uint256 before = imd.balanceOf(alice);

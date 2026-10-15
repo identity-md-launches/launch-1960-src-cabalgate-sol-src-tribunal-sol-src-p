@@ -114,7 +114,8 @@ Computed on chain at submit time (0–45). Prices come from the hook's hourly ch
 |---|---|
 | Share of balance sold | ≤20%: 16 · ≤35%: 9 · more: 3 (a plea is at most 50% of the balance and 2.5M PLEA) |
 | Buy-weighted holding time | ≥7 days: 7 · ≥3 days: 4 · ≥1 day: 2 |
-| Profit or loss on held PLEA | at a loss: 13 · gain ≤50%: 12 · ≤200%: 10 · ≤500%: 8 · ≤1,000%: 6 · more: 4 (the cost includes the fees paid, the launch fee too; PLEA without a buy record scores no profit or holding points) |
+| Profit or loss on held PLEA | at a loss: 13 · gain ≤50%: 12 · ≤200%: 10 · ≤500%: 8 · ≤1,000%: 6 · more: 4 (the cost includes the fees paid, the launch fee too) |
+| PLEA no buy record covers (a claim from the distributor, a season prize) | held since trading opened (the holding points above) and profit **10**, the middle of the table: a 20% plea needs 38 from day 1, 36 from day 3 (4 less with the price rising) |
 | 24h price trend | up >2%: 9 · flat (±2%) or no history: 5 · down: 0 (the reference is the checkpoint from 24 hours ago, or the newest older one within two days) |
 
 ### The dead-man

@@ -94,7 +94,8 @@ Earlier history (runs 2–4, the pre-run-3 audit `AuditRun3.t.sol`, the run-4 im
 
 - **IMD's run-7 adapt refactor of `CabalGate`** (launch #1843): OpenZeppelin `Strings` replaced by `_dec` / `_hex` (fuzz-equal to `Strings.toString` / `toHexString(address)`), checks moved into `_plead`, `_letterbox`, `_cooldown`, `_fromIntake`, `_unlock`; no behaviour change; 24,493 → 23,742 bytes. IMD's four `test/Run7*` files.
 - **Letters plead 20%** (`Letterbox.LETTER_SHARE_BPS` 2,000) and the **share bands move to ≤20%: 16 · ≤35%: 9 · more: 3** (user, 2026-10-15): a 20% letter keeps the need a 15% letter had (37 fresh at a loss).
-- **Softer profit/loss** (user, 2026-10-15): at a loss 13 · gain ≤50%: 12 · ≤200%: 10 · ≤500%: 8 · ≤1,000%: 6 · more: 4 (was 13 / 8 / 3 / 0). The fact maximum stays 45 (the lowest need 26); PLEA without a buy record still scores no profit or holding points.
+- **Softer profit/loss** (user, 2026-10-15): at a loss 13 · gain ≤50%: 12 · ≤200%: 10 · ≤500%: 8 · ≤1,000%: 6 · more: 4 (was 13 / 8 / 3 / 0). The fact maximum stays 45 (the lowest need 26).
+- **Received PLEA can play** (user, 2026-10-15): a plea that no buy record covers (the distributor's claims, season prizes, an exempt transfer) is scored as held since trading opened (`startedAt`) and at profit 10, the middle of the table, instead of 0 and 0 (it still never inherits a dust buy's history).
 - R7-M-1 and R7-T-1 fixed (above): new Letterbox and Tribunal hashes.
 
 ## Run 7 changes since run 6 (not findings; the areas should check them)

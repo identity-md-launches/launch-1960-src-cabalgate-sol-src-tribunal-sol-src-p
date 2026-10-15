@@ -242,7 +242,8 @@ contract CabalGate is OracleAttestationConsumer {
 
     /// @notice The on-chain fact score (0-45) for `seller` selling `amount` now: share of the balance
     /// at most 20%: 16, at most 35%: 9, more: 3; held 7 days: 7, 3 days: 4, 1 day: 2; at a loss: 13,
-    /// gain at most 50%: 12, 200%: 10, 500%: 8, 1,000%: 6, more: 4; 24h trend up: 9, flat: 5, down: 0.
+    /// gain at most 50%: 12, 200%: 10, 500%: 8, 1,000%: 6, more: 4 (PLEA no buy record covers: held since
+    /// trading opened, profit 10); 24h trend up: 9, flat: 5, down: 0.
     /// Prices are the hook's hourly checkpoints, never the spot price, and the holding time is
     /// buy-weighted.
     function factScore(address seller, uint256 amount) public view returns (uint8 score) {
@@ -263,14 +264,19 @@ contract CabalGate is OracleAttestationConsumer {
         score = shareBps <= 2_000 ? 16 : shareBps <= 3_500 ? 9 : 3;
         IPleaHook h = hook();
         (uint256 spent, uint256 heldPlea, uint256 avgBuyTime) = h.basisOf(seller);
-        // An untracked distribution or transfer must not inherit the history of a dust buy.
+        // A buy record that covers the plea scores its own holding time and profit. PLEA it does not
+        // cover (the distributor's claims, season prizes, an exempt transfer) never inherits the
+        // history of a dust buy: it counts as held since trading opened, at the profit table's middle.
         bool covered = heldPlea >= amount;
-        if (covered && avgBuyTime != 0 && avgBuyTime <= block.timestamp) {
-            uint256 held = block.timestamp - avgBuyTime;
+        uint256 since = covered ? avgBuyTime : startedAt;
+        if (since != 0 && since <= block.timestamp) {
+            uint256 held = block.timestamp - since;
             score += held >= 7 days ? 7 : held >= 3 days ? 4 : held >= 1 days ? 2 : 0;
         }
         uint256 latest = h.latestPrice();
-        if (covered && heldPlea != 0 && spent != 0) {
+        if (!covered) {
+            score += 10;
+        } else if (spent != 0) {
             uint256 value = FullMath.mulDiv(heldPlea, latest, FixedPoint96.Q96);
             if (value < spent) {
                 score += 13;
