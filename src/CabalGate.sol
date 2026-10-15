@@ -240,8 +240,11 @@ contract CabalGate is OracleAttestationConsumer {
         return IPleaHook(plea.hook());
     }
 
-    /// @notice The on-chain fact score (0-45) for `seller` selling `amount` now. Prices are the
-    /// hook's hourly checkpoints, never the spot price, and the holding time is buy-weighted.
+    /// @notice The on-chain fact score (0-45) for `seller` selling `amount` now: share of the balance
+    /// at most 20%: 16, at most 35%: 9, more: 3; held 7 days: 7, 3 days: 4, 1 day: 2; at a loss: 13,
+    /// gain at most 50%: 12, 200%: 10, 500%: 8, 1,000%: 6, more: 4; 24h trend up: 9, flat: 5, down: 0.
+    /// Prices are the hook's hourly checkpoints, never the spot price, and the holding time is
+    /// buy-weighted.
     function factScore(address seller, uint256 amount) public view returns (uint8 score) {
         return _factScore(seller, amount, plea.balanceOf(seller));
     }
@@ -257,7 +260,7 @@ contract CabalGate is OracleAttestationConsumer {
     /// own share and the original's, so a floor raise after the fee sale shrank the balance never
     /// drops the appeal into a worse band than the plea it repeats (a smaller appeal keeps its own).
     function _factScoreAt(address seller, uint256 amount, uint256 shareBps) internal view returns (uint8 score) {
-        score = shareBps <= 1_500 ? 16 : shareBps <= 3_000 ? 9 : 3;
+        score = shareBps <= 2_000 ? 16 : shareBps <= 3_500 ? 9 : 3;
         IPleaHook h = hook();
         (uint256 spent, uint256 heldPlea, uint256 avgBuyTime) = h.basisOf(seller);
         // An untracked distribution or transfer must not inherit the history of a dust buy.
@@ -273,7 +276,7 @@ contract CabalGate is OracleAttestationConsumer {
                 score += 13;
             } else {
                 uint256 gainPct = (value - spent) * 100 / spent;
-                score += gainPct <= 50 ? 8 : gainPct <= 200 ? 3 : 0;
+                score += gainPct <= 50 ? 12 : gainPct <= 200 ? 10 : gainPct <= 500 ? 8 : gainPct <= 1000 ? 6 : 4;
             }
         }
         uint256 ago = h.price24hAgo();
