@@ -148,10 +148,10 @@ After the Cabal approves a plea, the other holders get **20 minutes** to object.
   - **Sustained** when the new score is below the need by more than **2** (panel noise): the plea earns **no points** this season; the stake comes back.
   - **Overruled** otherwise: the plea's recorded score becomes the **lowest** score any panel gave it (never higher than the original); the stake goes to the **plea's season prize pot** through `settle` (or rollover if that season has already closed).
   - **Void** (the panel refused or split, or 20 minutes passed): nothing changes, the stake comes back, the slot frees up.
-- **At most two rulings per plea**, each from a different wallet; a sustain closes the case. One objection may be pending at a time.
+- **At most two objections per plea**, each from a different wallet; the second need not wait for the first panel, so both may be pending at once. A sustain closes the case to new objections.
 - **Points wait:** `Seasons.record` refuses a plea while its window is open or an objection is pending (`Held`), and for good after a sustain (`ObjectionSustained`); `closeSeason` skips such pleas. A letter's `deliver` still sells inside the hold; its points are recorded afterwards by anyone (`record`, or a later close's list). Window plus expiry (40 minutes) always end inside the 1-hour close grace, so a last-second approval is still ruled and recorded before its season can close.
 - **Rulings never reset the dead-man.** Only plea verdicts keep the Cabal alive.
-- `Tribunal.status(pleaId)` answers in one line (`Plea #7 · objections open until 07:25 UTC`, `· OBJECTION #3 pending`, `· seller excluded: no points, nothing to object to`, `· SUSTAINED (29 vs need 33) · no points`, `· OVERRULED (36 vs need 33) · counts 36 points`). `settle(id)` pays a decided objection's stake; anyone may call it, and funds stay in the Tribunal until someone does. For overruled stakes it uses `Seasons.checkpointObjection`, which credits the plea's season and calls `checkpoint` for other donations. `expire(id)` voids a stale one.
+- `Tribunal.status(pleaId)` answers in one line (`Plea #7 · objections open until 07:25 UTC`, `· OBJECTION #3 pending`, `· OBJECTIONS #3 and #4 pending`, `· seller excluded: no points, nothing to object to`, `· SUSTAINED (29 vs need 33) · no points`, `· OVERRULED (36 vs need 33) · counts 36 points`). `settle(id)` pays a decided objection's stake; anyone may call it, and funds stay in the Tribunal until someone does. For overruled stakes it uses `Seasons.checkpointObjection`, which credits the plea's season and calls `checkpoint` for other donations. `expire(id)` voids a stale one.
 - The Tribunal is ownerless and deployed after the launch from code committed in `launch.json`; a zero hash launches with objections off for good.
 
 ---
@@ -205,7 +205,7 @@ The factory must deploy all five atomically. PleaLaunch's constructor registers 
 
 Then:
 
-1. **Deploy the Letterbox.** Anyone calls `PleaLaunch.deployLetterbox(creationCode)` once (`script/DeployLetterbox.s.sol`). The code must match the hash committed at launch; the Letterbox reads its settings from PleaLaunch and `PLEA.setLetterbox` registers it (launcher only, once). Until then letters are not open; site pleas work.
+1. **Deploy the Letterbox.** Anyone calls `PleaLaunch.deployLetterbox(creationCode)` once (`script/DeployLetterbox.s.sol`). The code must match the hash committed at launch; the Letterbox reads its settings from PleaLaunch and `PLEA.setLetterbox` registers it (launcher only, once). `seed` waits for it, so trading never opens without letters.
 
    ```
    LAUNCH=… forge script script/DeployLetterbox.s.sol --rpc-url $RPC --private-key $KEY --broadcast
@@ -224,7 +224,7 @@ Then:
    forge script script/MineSalt.s.sol --rpc-url $RPC --private-key $KEY --broadcast
    ```
 
-4. **Open trading.** `PleaLaunch.seed()` creates the pool at a 5,700 IMD market cap (at least that, within one 60-tick spacing: the band is aligned to the grid on the PLEA-only side) and starts the Cabal. PLEA's current owner may call it any time, and anyone may call it once `START` has passed.
+4. **Open trading.** `PleaLaunch.seed()` creates the pool at a 5,700 IMD market cap (at least that, within one 60-tick spacing: the band is aligned to the grid on the PLEA-only side) and starts the Cabal. The hook and the Letterbox must exist first. PLEA's current owner may call it any time, and anyone may call it once `START` has passed.
 
 **Sepolia settings** (`launch.json` on this branch; `testnet6` is run 6's source, `testnet4` run 4's (launch #1466), `testnet3` run 3's (launch #1426), `testnet` run 2's, the `mainnet` branch has the Ethereum settings):
 
