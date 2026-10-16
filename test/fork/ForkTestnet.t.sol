@@ -145,8 +145,10 @@ contract ForkTestnetTest is Test {
                 )
             )
         );
-        // After the launch transaction: anyone deploys the committed Letterbox.
+        // After the launch transaction: anyone deploys the committed Letterbox and Tribunal (seed
+        // waits for both, round 6).
         letterbox = Letterbox(launch.deployLetterbox(vm.getCode("Letterbox.sol:Letterbox")));
+        launch.deployTribunal(vm.getCode("Tribunal.sol:Tribunal"));
     }
 
     function _deployHook() internal {
@@ -728,13 +730,13 @@ contract ForkTestnetTest is Test {
         assertEq(IMD.balanceOf(address(letterbox)), 0);
     }
 
-    /// Objection! through the live Intake v2: the committed Tribunal is deployed after the launch,
+    /// Objection! through the live Intake v2: the committed Tribunal, deployed after the launch and before the seed,
     /// a second wallet objects to an approved plea (the Tribunal mints the Sepolia oracle fee and
     /// pulls the 0.35 IMD stake), the writer completes with a re-score signed under the Tribunal's
     /// own domain, the stake goes to the season pot, and the points wait for the window. A second
     /// objection the panel cannot answer is void and its stake comes back.
     function test_objectionThroughTheLiveIntake() public {
-        Tribunal tribunal = Tribunal(launch.deployTribunal(vm.getCode("Tribunal.sol:Tribunal")));
+        Tribunal tribunal = Tribunal(launch.tribunal());
         assertEq(address(tribunal), launch.predictTribunal());
         assertEq(address(tribunal.intake()), INTAKE);
         address a = w[1];

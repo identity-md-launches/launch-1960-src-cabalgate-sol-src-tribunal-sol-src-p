@@ -167,8 +167,10 @@ contract ForkMainnetTest is Test {
                 )
             )
         );
-        // After the launch transaction: anyone deploys the committed Letterbox.
+        // After the launch transaction: anyone deploys the committed Letterbox and Tribunal (seed
+        // waits for both, round 6).
         letterbox = Letterbox(launch.deployLetterbox(vm.getCode("Letterbox.sol:Letterbox")));
+        launch.deployTribunal(vm.getCode("Tribunal.sol:Tribunal"));
     }
 
     function _deployHook() internal {
