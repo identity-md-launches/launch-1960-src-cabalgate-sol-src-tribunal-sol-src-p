@@ -331,6 +331,9 @@ contract ForkMainnetTest is Test {
         assertEq(IMD.balanceOf(a) - imdBefore, out);
         assertGe(out * 10_000, _spotValue(p.amount) * 9_500, "at least 95% of spot, no auto-sell fee on a letter");
         assertEq(IMD.balanceOf(runner), TIP);
+        assertFalse(seasons.recorded(id), "the points wait for the objection window");
+        _warp(block.timestamp + 20 minutes + 1); // the Tribunal's objection window (seed waits for it)
+        seasons.record(id);
         assertTrue(seasons.recorded(id));
         assertEq(plea.balanceOf(address(letterbox)), 0);
         assertEq(IMD.balanceOf(address(letterbox)), 0);
@@ -389,6 +392,7 @@ contract ForkMainnetTest is Test {
         gate.executeSell(0);
         console2.log("gas: site sale", g - gasleft());
         assertGt(IMD.balanceOf(a), imdBefore);
+        _warp(block.timestamp + 20 minutes + 1); // the Tribunal's objection window (seed waits for it)
         seasons.record(id);
         (, uint256 season,) = seasons.currentSeason();
         assertEq(seasons.bestOf(season, a)[0], 45);
