@@ -10,6 +10,7 @@ Earlier history (runs 2–4, the pre-run-3 audit `AuditRun3.t.sol`, the run-4 im
 
 | Round | Commit | Jobs | Verdict | Date |
 |---|---|---|---|---|
+| 7 (run 8) | `533dcec` (the round-6 fixes) | A1 `f6d6c21d-8012-4d22-a711-2db29deee3d3`, A2 `65feecfc-e91e-4e04-beb9-3bdf1ec809d7`, A3 `089c4b13-71c2-458d-98a9-8db3f95e1aab` | (running) | 2026-10-16 |
 | 6 (run 8) | `f6b1e9a` (the round-5 fixes) | A1 `71e98c31-02ce-4bd7-bdc3-ec143806de5f`, A2 `2f895e3b-a1b4-44b0-8e45-37f43265ac7f` (A3 not re-run: the hook is unchanged since round 5) | Judges: **A1 1 Low (R6-A1-1); A2 1 Low (R6-A2-1), 2 Infos.** No Critical, High or Medium; no finding against the round-5 fixes | 2026-10-16 |
 | 5 (run 8) | `9b89d98` (testnet8: the mainnet code with the Sepolia settings) | A1 `f8cdad4d-d725-4da6-bb9f-04c4eaafdec5`, A2 `0cf46111-7954-4af0-b64d-c81423256add`, A3 `9cdd11f8-ce14-4640-b62c-66dbfc58e813` | Judges: **A1 1 Medium (R5-A1-1, the last-second sham objection), 1 Low (R5-A1-2); A2 1 Low (R5-A2-1), 2 Infos; A3 2 Infos.** No Critical or High in any area | 2026-10-15 |
 | IMD launch job, run 7 (live, launch #1843) | `e1755aa` (adapted `7f18655`, delivered `247b838`) | job `5ce54b31-c82f-40a6-8a0a-236d10b31cd4` (import audit, adapt, economics, flow, math, permissions, tests, manifest, judge) | Import audit: no defect (1 coverage Info). Adapt: a CabalGate size refactor, no behaviour change. Specialists: flow, economics, permissions no defect; math 1 Low (R7-M-1). Tests: 18 new tests, 1 Low (R7-T-1). Judge: the two Lows, nothing higher. Both fixed on `next` | 2026-10-15 |
